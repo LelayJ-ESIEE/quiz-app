@@ -16,7 +16,6 @@ def GetQuizInfo():
 @app.route('/login', methods=['POST'])
 def IsLoginCorrect():
 	payload = request.get_json()
-	print(payload)
 	if payload["password"] == "Vive l'ESIEE !":
 		token = jwt_utils.build_token()
 		return {"token" : token}, 200
