@@ -1,6 +1,10 @@
+from lib2to3.pgen2 import token
 from flask import Flask, request
-import jwt_utils
 import json
+import jwt_utils
+import database
+from question import Question
+import sqlite3
 
 app = Flask(__name__)
 
@@ -25,6 +29,44 @@ def IsLoginCorrect():
 	else :
 		# return no token with HTTP code 401 (Unauthorized)
 		return '', 401
+
+@app.route('/questions', methods=['POST'])
+def addQuestion():
+	# get token
+	auth = request.headers.get('Authorization')
+	try:
+		token = auth.split(" ")[1]
+		if jwt_utils.decode_token(token) != "quiz-app-admin":
+			return '', 401
+	except:
+		return '', 401
+	
+	# get json object sent in request body
+	body = request.get_json()
+	try:
+		input_question = Question.from_json(body)
+	except json.decoder.JSONDecodeError:
+		return '', 415
+	except KeyError:
+		return '', 415
+	except:
+		raise
+		return '', 500
+	# create connection
+	db_connection = sqlite3.connect("../quiz-db.db")
+	db_connection.isolation_level = None
+
+	# add question to database
+	try:
+		database.addQuestion(db_connection, input_question)
+	except:
+		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
+		db_connection.close()
+		raise
+		return '', 500
+
+	db_connection.close()
+	return '', 200
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
