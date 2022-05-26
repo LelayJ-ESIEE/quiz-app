@@ -60,7 +60,6 @@ def addQuestion():
 	except:
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
 		db_connection.close()
-		raise
 		return '', 500
 
 	db_connection.close()
