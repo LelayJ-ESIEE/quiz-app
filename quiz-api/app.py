@@ -65,5 +65,23 @@ def addQuestion():
 	db_connection.close()
 	return '', 200
 
+@app.route('/questions/<position>', methods=['GET'])
+def getQuestion(position):
+	db_connection = sqlite3.connect("../quiz-db.db")
+	db_connection.isolation_level = None
+
+	# add question to database
+	try:
+		question = database.getQuestion(db_connection, position)
+		result = question.to_json()
+	except:
+		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
+		db_connection.close()
+		return '', 500
+
+	db_connection.close()
+	return result, 200
+
+
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
