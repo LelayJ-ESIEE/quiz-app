@@ -82,6 +82,30 @@ def getQuestion(position):
 	db_connection.close()
 	return result, 200
 
+@app.route('/questions/<position>', methods=['DELETE'])
+def deleteQuestion(position):
+	# check token
+	auth = request.headers.get('Authorization')
+	try:
+		token = auth.split(" ")[1]
+		if jwt_utils.decode_token(token) != "quiz-app-admin":
+			return '', 401
+	except:
+		return '', 401
+
+	db_connection = sqlite3.connect("../quiz-db.db")
+	db_connection.isolation_level = None
+
+	# delete question from database
+	try:
+		question = database.deleteQuestion(db_connection, position)
+	except:
+		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
+		db_connection.close()
+		return '', 500
+
+	db_connection.close()
+	return '', 204
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
