@@ -31,7 +31,7 @@ def IsLoginCorrect():
 
 @app.route('/questions', methods=['POST'])
 def addQuestion():
-	# get token
+	# check token
 	auth = request.headers.get('Authorization')
 	try:
 		token = auth.split(" ")[1]
@@ -70,7 +70,7 @@ def getQuestion(position):
 	db_connection = sqlite3.connect("../quiz-db.db")
 	db_connection.isolation_level = None
 
-	# add question to database
+	# get question from database
 	try:
 		question = database.getQuestion(db_connection, position)
 		result = question.to_json()
