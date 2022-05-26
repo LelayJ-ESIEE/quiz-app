@@ -50,7 +50,6 @@ def addQuestion():
 	except KeyError:
 		return '', 415
 	except:
-		raise
 		return '', 500
 	# create connection
 	db_connection = sqlite3.connect("../quiz-db.db")
