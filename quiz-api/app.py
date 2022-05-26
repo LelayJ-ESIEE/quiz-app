@@ -15,11 +15,15 @@ def GetQuizInfo():
 
 @app.route('/login', methods=['POST'])
 def IsLoginCorrect():
+	# get sent login payload
 	payload = request.get_json()
+	# check if the password is right
 	if payload["password"] == "Vive l'ESIEE !":
+		# generate token  and return it with HTTP code 200 (OK)
 		token = jwt_utils.build_token()
 		return {"token" : token}, 200
 	else :
+		# return no token with HTTP code 401 (Unauthorized)
 		return '', 401
 
 if __name__ == "__main__":
