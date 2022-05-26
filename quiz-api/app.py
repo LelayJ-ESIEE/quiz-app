@@ -1,4 +1,3 @@
-from lib2to3.pgen2 import token
 from flask import Flask, request
 import json
 import jwt_utils
