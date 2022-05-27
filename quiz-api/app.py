@@ -14,7 +14,17 @@ def hello_world():
 
 @app.route('/quiz-info', methods=['GET'])
 def GetQuizInfo():
-	return {"size": 0, "scores": []}, 200
+	try:
+		dbHelper = DBHelper()
+		size = dbHelper.getQuestionsCount()
+		scores = dbHelper.getScores()
+	except Exception as e:
+		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
+		dbHelper.close()
+		print(e)
+		return 'Internal Server Error', 500
+	dbHelper.close()
+	return {"size": size, "scores": scores}, 200
 
 @app.route('/login', methods=['POST'])
 def IsLoginCorrect():

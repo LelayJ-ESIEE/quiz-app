@@ -1,5 +1,5 @@
-import time
 from question import Question
+import time
 import sqlite3
 
 class NonExistingObjectError(Exception):
@@ -53,9 +53,9 @@ class DBHelper:
 			raise
 
 	def getQuestionsCount(self):
-		# initialize cursor
-		cursor = self.db_connection.cursor()
 		try:
+			# initialize cursor
+			cursor = self.db_connection.cursor()
 			cursor.execute(f"""SELECT id FROM question""")
 			questions_ids = cursor.fetchall()
 			if questions_ids is None:
@@ -272,4 +272,21 @@ class DBHelper:
 		except Exception as e:
 			print(e)
 			cursor.execute("ROLLBACK")
+			raise
+	
+	def getScores(self):
+		try:
+			# initialize cursor
+			cursor = self.db_connection.cursor()
+			cursor.execute(f"""SELECT playerName, score, date FROM participation ORDER BY score DESC""")
+			results = cursor.fetchall()
+			if results is None:
+				return 0
+			scores = []
+			for result in results:
+				date = time.strftime("%d/%m/%Y %H:%M:%S", time.gmtime(result[2] / 1000000000))
+				scores.append({"playerName": result[0], "score": result[1], "date": date})
+			return scores
+		except Exception as e:
+			print(e)
 			raise
