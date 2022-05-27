@@ -117,11 +117,10 @@ class DBHelper:
 		try:
 			# initialize cursor
 			cursor = self.db_connection.cursor()
-			# get question id
-			cursor.execute(f"""SELECT id FROM question WHERE title = "{input_question.title}" """)
-			questionId = cursor.fetchone()[0]
 			# start transaction
 			cursor.execute("BEGIN")
+			# get question id
+			questionId = self.getQuestionId(input_question.position)
 			# save the answers to db
 			for answer in input_question.possibleAnswers:
 				insertion_result = cursor.execute(
