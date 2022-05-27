@@ -185,3 +185,11 @@ class DBHelper:
 			print(e)
 			cursor.execute("ROLLBACK")
 			raise
+
+	def updateQuestion(self, position: int, question: Question):
+		try:
+			self.deleteQuestion(position)
+			self.addQuestion(question)
+		except Exception as e:
+			print(e)
+			raise
