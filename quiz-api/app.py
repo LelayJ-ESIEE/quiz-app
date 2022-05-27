@@ -27,7 +27,7 @@ def IsLoginCorrect():
 		return {"token" : token}, 200
 	else :
 		# return no token with HTTP code 401 (Unauthorized)
-		return '', 401
+		return 'Unauthorized', 401
 
 ###
 # Questions Management
@@ -40,21 +40,21 @@ def addQuestion():
 	try:
 		token = auth.split(" ")[1]
 		if jwt_utils.decode_token(token) != "quiz-app-admin":
-			return '', 401
+			return 'Unauthorized', 401
 	except:
-		return '', 401
+		return 'Unauthorized', 401
 	
 	# get question sent in request body
 	body = request.get_json()
 	try:
 		input_question = Question.from_json(body)
 	except json.decoder.JSONDecodeError:
-		return '', 415
+		return 'Unsupported Media Type: unparseable body', 415
 	except KeyError:
-		return '', 415
+		return 'Unsupported Media Type: wrong or missing arguments in the body', 415
 	except Exception as e:
 		print(e)
-		return '', 500
+		return 'Internal Server Error', 500
 	# create connection
 	dbHelper = DBHelper()
 
@@ -65,7 +65,7 @@ def addQuestion():
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
 		dbHelper.close()
 		print(e)
-		return '', 500
+		return 'Internal Server Error', 500
 
 	dbHelper.close()
 	return '', 200
@@ -85,7 +85,7 @@ def getQuestion(position):
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
 		dbHelper.close()
 		print(e)
-		return '', 500
+		return 'Internal Server Error', 500
 
 	dbHelper.close()
 	return result, 200
@@ -97,9 +97,9 @@ def deleteQuestion(position):
 	try:
 		token = auth.split(" ")[1]
 		if jwt_utils.decode_token(token) != "quiz-app-admin":
-			return '', 401
+			return 'Unauthorized', 401
 	except:
-		return '', 401
+		return 'Unauthorized', 401
 
 	dbHelper = DBHelper()
 
@@ -114,7 +114,7 @@ def deleteQuestion(position):
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
 		dbHelper.close()
 		print(e)
-		return '', 500
+		return 'Internal Server Error', 500
 
 	dbHelper.close()
 	return '', 204
@@ -126,9 +126,9 @@ def updateQuestion(position):
 	try:
 		token = auth.split(" ")[1]
 		if jwt_utils.decode_token(token) != "quiz-app-admin":
-			return '', 401
+			return 'Unauthorized', 401
 	except:
-		return '', 401
+		return 'Unauthorized', 401
 
 	# get question sent in request body
 	body = request.get_json()
@@ -140,7 +140,7 @@ def updateQuestion(position):
 		return '', 415
 	except Exception as e:
 		print(e)
-		return '', 500
+		return 'Internal Server Error', 500
 
 	dbHelper = DBHelper()
 
@@ -155,7 +155,7 @@ def updateQuestion(position):
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
 		dbHelper.close()
 		print(e)
-		return '', 500
+		return 'Internal Server Error', 500
 
 	dbHelper.close()
 	return '', 200
@@ -163,6 +163,52 @@ def updateQuestion(position):
 ###
 # Participation Management
 ###
+
+@app.route('/participations', methods=['POST'])
+def addParticipation():
+	# add participation sent in request body
+	try:
+		payload = request.get_json()
+		playerName = payload['playerName']
+		answers = payload['answers']
+
+		dbHelper = DBHelper()
+		
+		question_count = dbHelper.getQuestionsCount()
+		if (len(answers) != question_count):
+			dbHelper.close()
+			return "Bad request: wrong amount of answers", 400
+		
+		participationResult = dbHelper.addParticipation(playerName, answers)
+
+		dbHelper.close()
+		return participationResult, 200
+	except Exception as e:
+		dbHelper.close
+		print(e)
+		return 'Internal Server Error', 500
+
+@app.route('/participations', methods=['DELETE'])
+def deleteParticipations():
+	# check token
+	auth = request.headers.get('Authorization')
+	try:
+		token = auth.split(" ")[1]
+		if jwt_utils.decode_token(token) != "quiz-app-admin":
+			return 'Unauthorized', 401
+	except:
+		return 'Unauthorized', 401
+	# delete participations
+	try:
+		dbHelper = DBHelper()
+		dbHelper.deleteParticipations()
+		dbHelper.close()
+		return '', 204
+	except Exception as e:
+		dbHelper.close
+		print(e)
+		return 'Internal Server Error', 500
+
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
