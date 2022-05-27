@@ -44,7 +44,40 @@ class DBHelper:
 		except:
 			raise
 
-	def addQuestion(self, input_question):
+	def getQuestionsCount(self):
+		# initialize cursor
+		cursor = self.db_connection.cursor()
+		try:
+			cursor.execute(f"""SELECT id FROM question""")
+			questions_ids = cursor.fetchall()
+			if questions_ids is None:
+				return 0
+			return len(questions_ids)
+		except Exception as e:
+			print(e)
+			return 0
+
+	def increase_questions_position_from(self, position):
+		cursor = self.db_connection.cursor()
+		try :
+			cursor.execute("BEGIN")
+			cursor.execute(f"UPDATE question SET position=position+1 WHERE position>="+str(position))
+			cursor.execute("COMMIT")
+		except Exception as e:
+			print(e)
+			cursor.execute('ROLLBACK')
+	
+	def decrease_questions_position_from(self, position):
+		cursor = self.db_connection.cursor()
+		try :
+			cursor.execute("BEGIN")
+			cursor.execute(f"UPDATE question SET position=position-1 WHERE position>="+str(position))
+			cursor.execute("COMMIT")
+		except Exception as e:
+			print(e)
+			cursor.execute('ROLLBACK')
+
+	def addQuestion(self, input_question: Question):
 		"""
 		Adds the requested question and its answers to the connected database
 
@@ -54,8 +87,14 @@ class DBHelper:
 		"""
 		# Add question to database
 		try:
+			max_position = self.getQuestionsCount() + 1
+			if input_question.position > max_position:
+				input_question.position = max_position
 			# initialize cursor
 			cursor = self.db_connection.cursor()
+			# shift questions position if necessary
+			if(max_position > 0):
+				self.increase_questions_position_from(input_question.position)
 			# start transaction
 			cursor.execute("BEGIN")
 			# save the question to db
@@ -68,7 +107,6 @@ class DBHelper:
 			# in case of exception, rollback the transaction and raise
 			cursor.execute("ROLLBACK")
 			raise
-		
 		# Add answers to database
 		try:
 			# initialize cursor
@@ -142,6 +180,7 @@ class DBHelper:
 			# delete question
 			cursor.execute(f"""DELETE FROM question WHERE position = {position}""")
 			cursor.execute("COMMIT")
+			self.decrease_questions_position_from(position)
 		except Exception as e:
 			print(e)
 			cursor.execute("ROLLBACK")
