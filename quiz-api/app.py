@@ -29,6 +29,10 @@ def IsLoginCorrect():
 		# return no token with HTTP code 401 (Unauthorized)
 		return '', 401
 
+###
+# Questions Management
+###
+
 @app.route('/questions', methods=['POST'])
 def addQuestion():
 	# check token
@@ -155,6 +159,10 @@ def updateQuestion(position):
 
 	dbHelper.close()
 	return '', 200
+
+###
+# Participation Management
+###
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
