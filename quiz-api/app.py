@@ -48,7 +48,8 @@ def addQuestion():
 		return '', 415
 	except KeyError:
 		return '', 415
-	except:
+	except Exception as e:
+		print(e)
 		return '', 500
 	# create connection
 	dbHelper = DBHelper()
@@ -56,9 +57,10 @@ def addQuestion():
 	# add question to database
 	try:
 		dbHelper.addQuestion(input_question)
-	except:
+	except Exception as e:
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
 		dbHelper.close()
+		print(e)
 		return '', 500
 
 	dbHelper.close()
@@ -75,9 +77,10 @@ def getQuestion(position):
 		# in case of TypeError (= no row returned) close the connection and return HTTP code 404 (Not Found)
 		dbHelper.close()
 		return '', 404
-	except:
+	except Exception as e:
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
 		dbHelper.close()
+		print(e)
 		return '', 500
 
 	dbHelper.close()
@@ -103,9 +106,10 @@ def deleteQuestion(position):
 		# in case of TypeError (= no row returned) close the connection and return HTTP code 404 (Not Found)
 		dbHelper.close()
 		return '', 404
-	except:
+	except Exception as e:
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
 		dbHelper.close()
+		print(e)
 		return '', 500
 
 	dbHelper.close()
@@ -130,7 +134,8 @@ def updateQuestion(position):
 		return '', 415
 	except KeyError:
 		return '', 415
-	except:
+	except Exception as e:
+		print(e)
 		return '', 500
 
 	dbHelper = DBHelper()
@@ -142,9 +147,10 @@ def updateQuestion(position):
 		# in case of TypeError (= no row returned) close the connection and return HTTP code 404 (Not Found)
 		dbHelper.close()
 		return '', 404
-	except:
+	except Exception as e:
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
 		dbHelper.close()
+		print(e)
 		return '', 500
 
 	dbHelper.close()
