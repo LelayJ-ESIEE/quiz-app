@@ -10,6 +10,10 @@ class NonExistingObjectError(Exception):
 		super().__init__(self.message)
 
 class DBHelper:
+	###
+	# Helper Management
+	###
+
 	def __init__(self):
 		db_connection = None
 		try:
@@ -23,6 +27,10 @@ class DBHelper:
 	
 	def close(self):
 		self.db_connection.close()
+
+	###
+	# Questions Management
+	###
 
 	def getQuestionId(self, position):
 		"""
@@ -193,3 +201,9 @@ class DBHelper:
 		except Exception as e:
 			print(e)
 			raise
+	
+	###
+	# Participation Management
+	###
+
+	
