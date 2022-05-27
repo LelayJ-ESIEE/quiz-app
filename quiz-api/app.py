@@ -1,8 +1,8 @@
 from flask import Flask, request
+from question import Question
+from db_helper import DBHelper, NonExistingObjectError
 import json
 import jwt_utils
-import database
-from question import Question
 import sqlite3
 
 app = Flask(__name__)
@@ -51,35 +51,36 @@ def addQuestion():
 	except:
 		return '', 500
 	# create connection
-	db_connection = sqlite3.connect("../quiz-db.db")
-	db_connection.isolation_level = None
+	dbHelper = DBHelper()
 
 	# add question to database
 	try:
-		database.addQuestion(db_connection, input_question)
+		dbHelper.addQuestion(input_question)
 	except:
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
-		db_connection.close()
+		dbHelper.close()
 		return '', 500
 
-	db_connection.close()
+	dbHelper.close()
 	return '', 200
 
 @app.route('/questions/<position>', methods=['GET'])
 def getQuestion(position):
-	db_connection = sqlite3.connect("../quiz-db.db")
-	db_connection.isolation_level = None
-
 	# get question from database
 	try:
-		question = database.getQuestion(db_connection, position)
+		dbHelper = DBHelper()
+		question = dbHelper.getQuestion(position)
 		result = question.to_json()
+	except NonExistingObjectError:
+		# in case of TypeError (= no row returned) close the connection and return HTTP code 404 (Not Found)
+		dbHelper.close()
+		return '', 404
 	except:
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
-		db_connection.close()
+		dbHelper.close()
 		return '', 500
 
-	db_connection.close()
+	dbHelper.close()
 	return result, 200
 
 @app.route('/questions/<position>', methods=['DELETE'])
@@ -93,18 +94,21 @@ def deleteQuestion(position):
 	except:
 		return '', 401
 
-	db_connection = sqlite3.connect("../quiz-db.db")
-	db_connection.isolation_level = None
+	dbHelper = DBHelper()
 
 	# delete question from database
 	try:
-		question = database.deleteQuestion(db_connection, position)
+		question = dbHelper.deleteQuestion(position)
+	except NonExistingObjectError:
+		# in case of TypeError (= no row returned) close the connection and return HTTP code 404 (Not Found)
+		dbHelper.close()
+		return '', 404
 	except:
 		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
-		db_connection.close()
+		dbHelper.close()
 		return '', 500
 
-	db_connection.close()
+	dbHelper.close()
 	return '', 204
 
 if __name__ == "__main__":
