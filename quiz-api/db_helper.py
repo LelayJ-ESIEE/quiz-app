@@ -37,7 +37,6 @@ class DBHelper:
 		Gets the requested question ID in the connected database
 
 		Args:
-			db_connection: created database connection
 			position: position of the question to get the ID from the database
 		"""
 		try:
@@ -90,7 +89,6 @@ class DBHelper:
 		Adds the requested question and its answers to the connected database
 
 		Args:
-			db_connection: created database connection
 			input_question: question to add to the database
 		"""
 		# Add question to database
@@ -141,7 +139,6 @@ class DBHelper:
 		Gets the requested question and its answers from the connected database
 
 		Args:
-			db_connection: created database connection
 			position: question position to get from the database
 		
 		Returns:
@@ -174,7 +171,6 @@ class DBHelper:
 		Delete the requested question and its answers from the connected database
 
 		Args:
-			db_connection: created database connection
 			position: question position to get from the database
 		"""
 		try:
@@ -206,4 +202,3 @@ class DBHelper:
 	# Participation Management
 	###
 
-	
