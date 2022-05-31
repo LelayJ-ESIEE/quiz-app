@@ -3,15 +3,18 @@
 </template>
 
 <script>
-// import quizApiService from "@/services/QuizApiService";
+import quizApiService from "@/services/QuizApiService";
 
 export default {
   name: "HomePage",
   data() {
-    return {};
+    return {
+      registeredScores: [],
+    };
   },
   async created() {
-    console.log("Composant Home page 'created'");
+    const info = await quizApiService.getQuizInfo();
+    this.registeredScores = info.data.scores;
   },
 };
 </script>
