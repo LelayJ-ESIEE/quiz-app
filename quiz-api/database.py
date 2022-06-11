@@ -9,6 +9,7 @@ class Database():
 
     def addQuestion(self, input_question:Question):
         try:
+            self.reordering(input_question.position)
             db = sqlite3.connect(self.db_connection)
             db.isolation_level = None
 
@@ -82,7 +83,7 @@ class Database():
             
             result = result.fetchone()
             db.close()
-            
+
             if result is None:
                 return None
             return result['id']
@@ -100,18 +101,22 @@ class Database():
             cur = db.cursor()
             cur.execute("begin")
 
-            result = cur.execute(
+            position = cur.execute(
+                f"select position from question where id = ?",
+                (id,))
+            position = position.fetchone()
+
+            cur.execute(
                 f"delete from question where id = ?",
                 (id,))
-            
-            question = result.fetchone()
 
-            result = cur.execute(
+            cur.execute(
                 f"delete from answer where question_id = ?",
                 (id,))
 
             cur.execute("commit")
             db.close()
+            self.reordering(position['position'], True)
             return True
             
         except sqlite3.Error as err:
@@ -120,6 +125,13 @@ class Database():
             return False
 
     def updateQuestion(self, question:Question, id:int):
+        if not self.deleteQuestion(id):
+            return False
+        if not self.addQuestion(question):
+            return False
+        return True
+
+    def reordering(self, position:int, isDelete:bool = False):
         try:
             db = sqlite3.connect(self.db_connection)
             db.isolation_level = None
@@ -127,30 +139,22 @@ class Database():
             cur = db.cursor()
             cur.execute("begin")
 
-            cur.execute(
-                "update question set title = ?, text = ?, image = ?, position = ? WHERE id = ?",
-                (question.title, question.text, question.image, question.position, id)
-            )
-
-            cur.execute(
-                "delete from answer where question_id = ?",
-                (id,)
-            )
-
-            for answer in question.possibleAnswers:
+            if isDelete:
                 cur.execute(
-                    "insert into answer (question_id, text, isCorrect) values (?, ?, ?)",
-                    (id, answer['text'],  answer['isCorrect'])
-                )
-
+                    "update question set position = position - 1 where position >= ?",
+                    (position,))
+            else:
+                cur.execute(
+                    "update question set position = position + 1 where position >= ?",
+                    (position,))
             cur.execute("commit")
             db.close()
-            return True
+            return
 
-        except sqlite3.Error as err:
+        except sqlite3.Error:
             cur.execute('rollback')
             db.close()
-            return False
+            return
 
 
 
