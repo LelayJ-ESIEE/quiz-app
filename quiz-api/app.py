@@ -1,11 +1,23 @@
 from flask import Flask, request
 import json
 import jwt_utils
-import database
+from database import Database
 from question import Question
-import sqlite3
+
+db = Database('../quiz-db.db')
 
 app = Flask(__name__)
+
+def isAuth():
+	# get token
+	auth = request.headers.get('Authorization')
+	try:
+		if jwt_utils.decode_token(auth.split(" ")[1]) != "quiz-app-admin":
+			return False
+		return True
+	except:
+		return False
+
 
 @app.route('/')
 def hello_world():
@@ -23,65 +35,85 @@ def IsLoginCorrect():
 	# check if the password is right
 	if payload["password"] == "Vive l'ESIEE !":
 		# generate token  and return it with HTTP code 200 (OK)
-		token = jwt_utils.build_token()
-		return {"token" : token}, 200
+		return {"token" : jwt_utils.build_token()}, 200
 	else :
 		# return no token with HTTP code 401 (Unauthorized)
 		return '', 401
 
 @app.route('/questions', methods=['POST'])
 def addQuestion():
-	# get token
-	auth = request.headers.get('Authorization')
-	try:
-		token = auth.split(" ")[1]
-		if jwt_utils.decode_token(token) != "quiz-app-admin":
-			return '', 401
-	except:
-		return '', 401
+
+	if not isAuth():
+		return 'Vous n\'êtes pas authentifier', 401
 	
 	# get json object sent in request body
 	body = request.get_json()
 	try:
-		input_question = Question.from_json(body)
+		input_question = Question(body['title'], body['text'], body['position'], body['image'], body['possibleAnswers'])
 	except json.decoder.JSONDecodeError:
-		return '', 415
+		return 'json.decoder.JSONDecodeError exception', 415
 	except KeyError:
-		return '', 415
-	except:
-		return '', 500
-	# create connection
-	db_connection = sqlite3.connect("../quiz-db.db")
-	db_connection.isolation_level = None
+		return 'KeyError exception', 415
 
 	# add question to database
-	try:
-		database.addQuestion(db_connection, input_question)
-	except:
-		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
-		db_connection.close()
-		return '', 500
+	if db.addQuestion(input_question):
+		return 'Ajout de la question reussi', 200
+	
+	return 'Erreur durant l\'ajout de la question', 500
 
-	db_connection.close()
-	return '', 200
 
 @app.route('/questions/<position>', methods=['GET'])
 def getQuestion(position):
-	db_connection = sqlite3.connect("../quiz-db.db")
-	db_connection.isolation_level = None
 
-	# add question to database
+	# get question from database
+	if db.checkPosition(position) is None:
+		return 'La question n\'existe pas', 404
+
+	question = db.getQuestion(position)
+	if question:
+		result = question.toJson()
+		return result, 200
+	else:
+		return 'Erreur dans la récupération de la question', 500
+	
+@app.route('/questions/<position>', methods=['DELETE'])
+def DelQuestion(position):
+
+	if not isAuth():
+		return 'Vous n\'êtes pas authentifier', 401
+    
+	id = db.checkPosition(position)
+	if id is None:
+		return 'La question n\'existe pas', 404
+
+	if not db.deleteQuestion(id):
+		return 'Erreur lors de la suppression de la question', 500
+
+	return 'Suppression reussi', 204
+
+@app.route('/questions/<position>', methods=['PUT'])
+def UpdQuestion(position):
+
+	# get json object sent in request body
+	body = request.get_json()
 	try:
-		question = database.getQuestion(db_connection, position)
-		result = question.to_json()
-	except:
-		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
-		db_connection.close()
-		return '', 500
+		input_question = Question(body['title'], body['text'], body['position'], body['image'], body['possibleAnswers'])
+	except json.decoder.JSONDecodeError:
+		return 'json.decoder.JSONDecodeError exception', 415
+	except KeyError:
+		return 'KeyError exception', 415
 
-	db_connection.close()
-	return result, 200
+	if not isAuth():
+		return 'Vous n\'êtes pas authentifier', 401
+    
+	id = db.checkPosition(position)
+	if id is None:
+		return 'La question n\'existe pas', 404
 
+	if not db.updateQuestion(input_question, id):
+		return 'Erreur lors de la modification de la question', 500
+
+	return 'Modification reussi', 200
 
 if __name__ == "__main__":
-    app.run(ssl_context='adhoc')
+    app.run()
