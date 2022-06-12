@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import participationStorageService from "@/services/ParticipationStorageService";
+
 export default {
   name: "NewQuizPage",
   data() {
@@ -26,7 +28,7 @@ export default {
   },
   methods: {
     launchNewQuiz() {
-      console.log("Launch new quiz with", this.username);
+      participationStorageService.savePlayerName(this.username);
     },
   },
   async created() {},
