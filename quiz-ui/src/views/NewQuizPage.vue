@@ -3,7 +3,12 @@
   <form>
     <div class="input-group input-group-lg">
       <span class="input-group-text">Saisissez votre nom :</span>
-      <input type="text" class="form-control" placeholder="Username" />
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Username"
+        v-model="username"
+      />
     </div>
     <button type="button" class="btn btn-primary">Commencer le Quiz</button>
   </form>
@@ -13,7 +18,9 @@
 export default {
   name: "NewQuizPage",
   data() {
-    return {};
+    return {
+      username: "",
+    };
   },
   async created() {},
 };
