@@ -9,6 +9,7 @@
         placeholder="Username"
         v-model="username"
       />
+      <p>{{ username }}</p>
     </div>
     <button type="button" class="btn btn-primary">Commencer le Quiz</button>
   </form>
