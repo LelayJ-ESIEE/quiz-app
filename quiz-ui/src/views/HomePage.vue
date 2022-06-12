@@ -1,5 +1,9 @@
 <template>
   <h1>Home page</h1>
+  <div v-for="scoreEntry in registeredScores" v-bind:key="scoreEntry.date">
+    {{ scoreEntry.playerName }} - {{ scoreEntry.score }}
+  </div>
+  <router-link to="/start-new-quiz-page">Démarrer le quiz !</router-link>
 </template>
 
 <script>
@@ -13,8 +17,8 @@ export default {
     };
   },
   async created() {
-    const info = await quizApiService.getQuizInfo();
-    this.registeredScores = info.data.scores;
+    const Quizinfo = await quizApiService.getQuizInfo();
+    this.registeredScores = Quizinfo.data.scores;
   },
 };
 </script>
