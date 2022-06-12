@@ -8,6 +8,7 @@
         class="form-control"
         placeholder="Username"
         v-model="username"
+        required
       />
     </div>
     <button type="button" class="btn btn-primary" @click="launchNewQuiz">
@@ -28,7 +29,9 @@ export default {
   },
   methods: {
     launchNewQuiz() {
+      if (this.username == "") return;
       participationStorageService.savePlayerName(this.username);
+      this.$router.push("/questions");
     },
   },
   async created() {},
@@ -52,5 +55,9 @@ form {
 
 button {
   margin-top: 1em;
+}
+
+input:invalid {
+  box-shadow: 0 0 10px 2px red;
 }
 </style>
