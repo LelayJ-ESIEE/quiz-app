@@ -1,5 +1,4 @@
 <template>
-  <h1>Question du Quiz</h1>
   <div class="Question mx-auto">
     <h2>{{ question.title }}</h2>
     <p>{{ question.text }}</p>
