@@ -1,6 +1,10 @@
 <template>
   <h1>Home page</h1>
-  <div v-for="scoreEntry in registeredScores" v-bind:key="scoreEntry.date">
+  <div
+    class="score"
+    v-for="scoreEntry in registeredScores"
+    v-bind:key="scoreEntry.date"
+  >
     {{ scoreEntry.playerName }} - {{ scoreEntry.score }}
   </div>
   <router-link to="/start-new-quiz-page">Démarrer le quiz !</router-link>
@@ -22,3 +26,30 @@ export default {
   },
 };
 </script>
+
+<style>
+html {
+  padding: 25;
+  margin: 25;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 28px;
+  color: #666;
+}
+
+h1 {
+  color: #1db623;
+}
+
+a {
+  padding: 8px;
+  margin-bottom: 10px;
+  outline: none;
+  color: #1c87c9;
+  cursor: pointer;
+}
+
+.score {
+  font-weight: bold;
+  color: white;
+}
+</style>
