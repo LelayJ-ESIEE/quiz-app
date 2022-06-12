@@ -9,9 +9,10 @@
         placeholder="Username"
         v-model="username"
       />
-      <p>{{ username }}</p>
     </div>
-    <button type="button" class="btn btn-primary">Commencer le Quiz</button>
+    <button type="button" class="btn btn-primary" @click="launchNewQuiz">
+      Commencer le Quiz
+    </button>
   </form>
 </template>
 
@@ -22,6 +23,11 @@ export default {
     return {
       username: "",
     };
+  },
+  methods: {
+    launchNewQuiz() {
+      console.log("Launch new quiz with", this.username);
+    },
   },
   async created() {},
 };
