@@ -8,6 +8,7 @@
         v-for="(answer, index) in question.possibleAnswers"
         :key="answer.text"
         @click="$emit('answer-selected', index)"
+        class="btn btn-light answer"
       >
         {{ answer.text }}
       </a>
@@ -29,3 +30,15 @@ export default {
   emits: ["answer-selected"],
 };
 </script>
+
+<style>
+.answer {
+  margin: 0.5em 0.1em 0.5em 1em;
+  width: 100%;
+}
+
+.btn:hover {
+  color: #fff;
+  background-color: forestgreen;
+}
+</style>

@@ -81,8 +81,6 @@ nav a:first-of-type {
   }
 
   #app {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
     padding: 0 2rem;
   }
 

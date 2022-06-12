@@ -50,10 +50,11 @@ export default {
     },
 
     async endQuiz() {
-      quizApiService.postParticipation(
+      let resultat = await quizApiService.postParticipation(
         participationStorageService.getPlayerName(),
         this.answers
       );
+      participationStorageService.saveParticipationScore(resultat.data.score);
       this.$router.push("/result-score-page");
     },
   },

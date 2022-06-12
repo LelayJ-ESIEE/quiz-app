@@ -7,7 +7,6 @@
   >
     {{ scoreEntry.playerName }} - {{ scoreEntry.score }}
   </div>
-  <br />
   <router-link id="demarrer" to="/start-new-quiz-page" class="btn btn-primary"
     >Démarrer le quiz !</router-link
   >
