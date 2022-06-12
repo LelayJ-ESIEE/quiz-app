@@ -1,15 +1,10 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-
+import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
   <header>
-
-
     <div class="wrapper">
-
-
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
@@ -21,10 +16,10 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style>
-@import '@/assets/base.css';
+@import "@/assets/base.css";
 
 #app {
-  max-width: 1280px;
+  max-width: 90%;
   margin: 0 auto;
   padding: 2rem;
 
@@ -56,7 +51,7 @@ a,
 
 nav {
   width: 100%;
-  font-size: 12px;
+  font-size: 2em;
   text-align: center;
   margin-top: 2rem;
 }
@@ -87,7 +82,7 @@ nav a:first-of-type {
 
   #app {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     padding: 0 2rem;
   }
 

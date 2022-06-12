@@ -7,7 +7,10 @@
   >
     {{ scoreEntry.playerName }} - {{ scoreEntry.score }}
   </div>
-  <router-link to="/start-new-quiz-page">Démarrer le quiz !</router-link>
+  <br />
+  <router-link id="demarrer" to="/start-new-quiz-page" class="btn btn-primary"
+    >Démarrer le quiz !</router-link
+  >
 </template>
 
 <script>
@@ -33,19 +36,14 @@ html {
   margin: 25;
   font-family: Roboto, Arial, sans-serif;
   font-size: 28px;
-  color: #666;
 }
 
 h1 {
-  color: #1db623;
+  color: hsla(160, 100%, 37%, 1);
 }
 
-a {
-  padding: 8px;
-  margin-bottom: 10px;
-  outline: none;
-  color: #1c87c9;
-  cursor: pointer;
+#demarrer {
+  margin: 3em 10em 0em 0em;
 }
 
 .score {
