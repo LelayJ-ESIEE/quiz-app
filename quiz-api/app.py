@@ -1,11 +1,13 @@
 from flask import Flask, request
 from question import Question
 from db_helper import DBHelper, NonExistingObjectError
+from flask_cors import CORS
 import json
 import jwt_utils
 import sqlite3
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def hello_world():
@@ -221,4 +223,4 @@ def deleteParticipations():
 
 
 if __name__ == "__main__":
-    app.run(ssl_context='adhoc')
+    app.run()
