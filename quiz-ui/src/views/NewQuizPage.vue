@@ -1,5 +1,12 @@
 <template>
   <h1>New Quiz page</h1>
+  <form>
+    <div class="input-group input-group-lg">
+      <span class="input-group-text">Saisissez votre nom :</span>
+      <input type="text" class="form-control" placeholder="Username" />
+    </div>
+    <button type="button" class="btn btn-primary">Commencer le Quiz</button>
+  </form>
 </template>
 
 <script>
@@ -14,8 +21,6 @@ export default {
 
 <style>
 html {
-  padding: 25;
-  margin: 25;
   font-family: Roboto, Arial, sans-serif;
   font-size: 28px;
   color: #666;
@@ -23,5 +28,13 @@ html {
 
 h1 {
   color: #1db623;
+}
+
+form {
+  margin-top: 3em;
+}
+
+button {
+  margin-top: 1em;
 }
 </style>
