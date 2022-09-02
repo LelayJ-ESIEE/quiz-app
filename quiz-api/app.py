@@ -25,5 +25,13 @@ def IsLoginCorrect():
 		# return no token with HTTP code 401 (Unauthorized)
 		return 'Unauthorized', 401
 
+###
+# Questions Management
+###
+
+###
+# Participation Management
+###
+
 if __name__ == "__main__":
 	app.run(ssl_context='adhoc')
