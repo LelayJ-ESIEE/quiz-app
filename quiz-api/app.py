@@ -69,9 +69,31 @@ def addQuestion():
 	dbHelper.close()
 	return '', 200
 
+@app.route('/questions/<position>', methods=['GET'])
+def getQuestion(position):
+	# get question from database
+	return 'Not Implemented Yet', 405
+
+@app.route('/questions/<position>', methods=['DELETE'])
+def deleteQuestion(position):
+	return 'Not Implemented Yet', 405
+
+@app.route('/questions/<position>', methods=['PUT'])
+def updateQuestion(position):
+	return 'Not Implemented Yet', 405
+
 ###
 # Participation Management
 ###
+
+@app.route('/participations', methods=['POST'])
+def addParticipation():
+	# add participation sent in request body
+	return 'Not Implemented Yet', 405
+
+@app.route('/participations', methods=['DELETE'])
+def deleteParticipations():
+	return 'Not Implemented Yet', 405
 
 if __name__ == "__main__":
 	app.run(ssl_context='adhoc')
