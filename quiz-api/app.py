@@ -219,4 +219,4 @@ def deleteParticipations():
 		return 'Internal Server Error', 500
 
 if __name__ == "__main__":
-	app.run(ssl_context='adhoc')
+	app.run()
