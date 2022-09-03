@@ -1,5 +1,6 @@
 from question import Question
 import sqlite3
+import time
 
 class NonExistingObjectError(Exception):
 	"""
@@ -61,6 +62,32 @@ class DBHelper:
 		except Exception as e:
 			print(e)
 			return 0
+
+	def getCorrectAnswers(self):
+		try:
+			# initialize cursor
+			cursor = self.db_connection.cursor()
+			# get questions id in position order
+			cursor.execute(f"""SELECT id FROM question ORDER BY position ASC""")
+			questionIds = cursor.fetchall()
+			if questionIds is None:
+				raise NonExistingObjectError()
+			# get correct answers index
+			correctAnswers = []
+			for item in questionIds:
+				questionId = item[0]
+				cursor.execute(f"""SELECT is_correct FROM answer where question_id = {questionId}""")
+				i = 1
+				for isCorrect in cursor:
+					if isCorrect[0]:
+						correctAnswers.append(i)
+						break
+					i+=1
+			return correctAnswers
+		except Exception as e:
+			print(e)
+			cursor.execute("ROLLBACK")
+			raise
 
 	def increase_questions_position_from(self, position):
 		cursor = self.db_connection.cursor()
@@ -195,3 +222,65 @@ class DBHelper:
 	###
 	# Participation Management
 	###
+
+	def addParticipation(self, playerName, answers):
+		"""
+		Add the requested participation to the connected database
+		Args:
+			playerName: participating player name to insert in the database
+			answers: player's answers
+		
+		Returns:
+		"""
+		try:
+			# initialize cursor and add participation to database
+			cursor = self.db_connection.cursor()
+			cursor.execute("BEGIN")
+			# get correct answers
+			correctAnswers = self.getCorrectAnswers()
+			# determine result of participation
+			answersSummaries = []
+			score = 0
+			for i in range(len(answers)):
+				answersSummaries.append({"correctAnswerPosition": correctAnswers[i], "wasCorrect": (answers[i]==correctAnswers[i])})
+				if answers[i]==correctAnswers[i]:
+					score += 1
+			# print("here2")
+			insertion_result = cursor.execute(
+				f"INSERT INTO participation (playerName, score, date) VALUES"
+				f"""("{playerName}",{score},{time.time_ns()})""")
+			cursor.execute("COMMIT")
+			return {"answersSummaries": answersSummaries, "playerName": playerName, "score": score}
+		except Exception as e:
+			print(e)
+			cursor.execute("ROLLBACK")
+			raise
+	
+	def deleteParticipations(self):
+		try:
+			# initialize cursor and add participation to database
+			cursor = self.db_connection.cursor()
+			cursor.execute("BEGIN")
+			insertion_result = cursor.execute(f"""DELETE FROM participation""")
+			cursor.execute("COMMIT")
+		except Exception as e:
+			print(e)
+			cursor.execute("ROLLBACK")
+			raise
+	
+	def getScores(self):
+		try:
+			# initialize cursor
+			cursor = self.db_connection.cursor()
+			cursor.execute(f"""SELECT playerName, score, date FROM participation ORDER BY score DESC""")
+			results = cursor.fetchall()
+			if results is None:
+				return 0
+			scores = []
+			for result in results:
+				date = time.strftime("%d/%m/%Y %H:%M:%S", time.gmtime(result[2] / 1000000000))
+				scores.append({"playerName": result[0], "score": result[1], "date": date})
+			return scores
+		except Exception as e:
+			print(e)
+			raise

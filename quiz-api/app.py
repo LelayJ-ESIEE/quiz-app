@@ -13,7 +13,17 @@ def hello_world():
 
 @app.route('/quiz-info', methods=['GET'])
 def GetQuizInfo():
-	return {"size": 0, "scores": []}, 200
+	try:
+		dbHelper = DBHelper()
+		size = dbHelper.getQuestionsCount()
+		scores = dbHelper.getScores()
+	except Exception as e:
+		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
+		dbHelper.close()
+		print(e)
+		return 'Internal Server Error', 500
+	dbHelper.close()
+	return {"size": size, "scores": scores}, 200
 
 @app.route('/login', methods=['POST'])
 def IsLoginCorrect():
@@ -166,11 +176,47 @@ def updateQuestion(position):
 @app.route('/participations', methods=['POST'])
 def addParticipation():
 	# add participation sent in request body
-	return 'Not Implemented Yet', 405
+	try:
+		payload = request.get_json()
+		playerName = payload['playerName']
+		answers = payload['answers']
+
+		dbHelper = DBHelper()
+		
+		question_count = dbHelper.getQuestionsCount()
+		if (len(answers) != question_count):
+			dbHelper.close()
+			return "Bad request: wrong amount of answers", 400
+		
+		participationResult = dbHelper.addParticipation(playerName, answers)
+
+		dbHelper.close()
+		return participationResult, 200
+	except Exception as e:
+		dbHelper.close
+		print(e)
+		return 'Internal Server Error', 500
 
 @app.route('/participations', methods=['DELETE'])
 def deleteParticipations():
-	return 'Not Implemented Yet', 405
+	# check token
+	auth = request.headers.get('Authorization')
+	try:
+		token = auth.split(" ")[1]
+		if jwt_utils.decode_token(token) != "quiz-app-admin":
+			return 'Unauthorized', 401
+	except:
+		return 'Unauthorized', 401
+	# delete participations
+	try:
+		dbHelper = DBHelper()
+		dbHelper.deleteParticipations()
+		dbHelper.close()
+		return '', 204
+	except Exception as e:
+		dbHelper.close
+		print(e)
+		return 'Internal Server Error', 500
 
 if __name__ == "__main__":
 	app.run(ssl_context='adhoc')
