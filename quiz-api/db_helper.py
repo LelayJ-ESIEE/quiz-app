@@ -130,6 +130,37 @@ class DBHelper:
 			cursor.execute("ROLLBACK")
 			raise
 
+	def getQuestion(self, position):
+		"""
+		Gets the requested question and its answers from the connected database
+		Args:
+			position: question position to get from the database
+		
+		Returns:
+			Question: the requested question
+		"""
+		try:
+			questionId = self.getQuestionId(position)
+			# initialize cursor
+			cursor = self.db_connection.cursor()
+			# get question
+			cursor.execute(f"""SELECT title, text, image, position FROM question WHERE position = {position}""")
+			question = cursor.fetchone()
+			if question is None:
+				raise NonExistingObjectError()
+			# get list of answers
+			cursor.execute(f"""SELECT text, is_correct FROM answer WHERE question_id = {questionId}""")
+			answers = cursor.fetchall()
+			if answers is None:
+				raise NonExistingObjectError()
+			# aggregate answers to dict
+			l_answers = [{"text": answer[0], "isCorrect": answer[1] > 0} for answer in answers]
+			# return requested Question
+			return Question(question[0], question[1], question[2], question[3], l_answers)
+		except Exception as e:
+			print(e)
+			raise
+
 	def deleteQuestion(self, position):
 		"""
 		Delete the requested question and its answers from the connected database

@@ -72,7 +72,22 @@ def addQuestion():
 @app.route('/questions/<position>', methods=['GET'])
 def getQuestion(position):
 	# get question from database
-	return 'Not Implemented Yet', 405
+	try:
+		dbHelper = DBHelper()
+		question = dbHelper.getQuestion(position)
+		result = question.to_json()
+	except NonExistingObjectError:
+		# in case of TypeError (= no row returned) close the connection and return HTTP code 404 (Not Found)
+		dbHelper.close()
+		return '', 404
+	except Exception as e:
+		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
+		dbHelper.close()
+		print(e)
+		return 'Internal Server Error', 500
+
+	dbHelper.close()
+	return result, 200
 
 @app.route('/questions/<position>', methods=['DELETE'])
 def deleteQuestion(position):
