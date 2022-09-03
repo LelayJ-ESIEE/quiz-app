@@ -72,6 +72,16 @@ class DBHelper:
 			print(e)
 			cursor.execute('ROLLBACK')
 
+	def decrease_questions_position_from(self, position):
+		cursor = self.db_connection.cursor()
+		try :
+			cursor.execute("BEGIN")
+			cursor.execute(f"UPDATE question SET position=position-1 WHERE position>="+str(position))
+			cursor.execute("COMMIT")
+		except Exception as e:
+			print(e)
+			cursor.execute('ROLLBACK')
+
 	def addQuestion(self, input_question: Question):
 		"""
 		Adds the requested question and its answers to the connected database
@@ -117,6 +127,29 @@ class DBHelper:
 			cursor.execute("COMMIT")
 		except:
 			# in case of exception, rollback the transaction and raise
+			cursor.execute("ROLLBACK")
+			raise
+
+	def deleteQuestion(self, position):
+		"""
+		Delete the requested question and its answers from the connected database
+		Args:
+			position: question position to get from the database
+		"""
+		try:
+			# initialize cursor
+			cursor = self.db_connection.cursor()
+			cursor.execute("BEGIN")
+			# get question id
+			questionId = self.getQuestionId(position)
+			# delete answers
+			cursor.execute(f"""DELETE FROM answer WHERE question_id = {questionId}""")
+			# delete question
+			cursor.execute(f"""DELETE FROM question WHERE position = {position}""")
+			cursor.execute("COMMIT")
+			self.decrease_questions_position_from(position)
+		except Exception as e:
+			print(e)
 			cursor.execute("ROLLBACK")
 			raise
 

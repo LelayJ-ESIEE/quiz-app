@@ -1,4 +1,4 @@
-from db_helper import DBHelper
+from db_helper import DBHelper, NonExistingObjectError
 from flask import Flask, request
 from question import Question
 import json
@@ -76,7 +76,32 @@ def getQuestion(position):
 
 @app.route('/questions/<position>', methods=['DELETE'])
 def deleteQuestion(position):
-	return 'Not Implemented Yet', 405
+	# check token
+	auth = request.headers.get('Authorization')
+	try:
+		token = auth.split(" ")[1]
+		if jwt_utils.decode_token(token) != "quiz-app-admin":
+			return 'Unauthorized', 401
+	except:
+		return 'Unauthorized', 401
+
+	dbHelper = DBHelper()
+
+	# delete question from database
+	try:
+		dbHelper.deleteQuestion(position)
+	except NonExistingObjectError:
+		# in case of TypeError (= no row returned) close the connection and return HTTP code 404 (Not Found)
+		dbHelper.close()
+		return '', 404
+	except Exception as e:
+		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
+		dbHelper.close()
+		print(e)
+		return 'Internal Server Error', 500
+
+	dbHelper.close()
+	return '', 204
 
 @app.route('/questions/<position>', methods=['PUT'])
 def updateQuestion(position):
