@@ -1,4 +1,7 @@
+from db_helper import DBHelper
 from flask import Flask, request
+from question import Question
+import json
 import jwt_utils
 
 app = Flask(__name__)
@@ -28,6 +31,43 @@ def IsLoginCorrect():
 ###
 # Questions Management
 ###
+
+@app.route('/questions', methods=['POST'])
+def addQuestion():
+	# check token
+	auth = request.headers.get('Authorization')
+	try:
+		token = auth.split(" ")[1]
+		if jwt_utils.decode_token(token) != "quiz-app-admin":
+			return 'Unauthorized', 401
+	except:
+		return 'Unauthorized', 401
+	
+	# get question sent in request body
+	body = request.get_json()
+	try:
+		input_question = Question.from_json(body)
+	except json.decoder.JSONDecodeError:
+		return 'Unsupported Media Type: unparseable body', 415
+	except KeyError:
+		return 'Unsupported Media Type: wrong or missing arguments in the body', 415
+	except Exception as e:
+		print(e)
+		return 'Internal Server Error', 500
+	# create connection
+	dbHelper = DBHelper()
+
+	# add question to database
+	try:
+		dbHelper.addQuestion(input_question)
+	except Exception as e:
+		# in case of exception, close the connection and return HTTP code 500 (Internal Server Error)
+		dbHelper.close()
+		print(e)
+		return 'Internal Server Error', 500
+
+	dbHelper.close()
+	return '', 200
 
 ###
 # Participation Management
