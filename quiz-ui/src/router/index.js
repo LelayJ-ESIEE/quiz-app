@@ -20,6 +20,11 @@ const router = createRouter({
       path: '/questions',
       name: 'QuestionsManager',
       component: QuestionsManager
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: () => import('../views/AboutView.vue')
     }
   ]
 })
