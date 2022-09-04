@@ -41,7 +41,8 @@
 				this.loadQuestionByPosition(this.currentQuestionPosition);
 			},
 			async endQuiz(){
-				quizApiService.postParticipation(participationStorageService.getPlayerName(), this.answers);
+				const result = quizApiService.postParticipation(participationStorageService.getPlayerName(), this.answers);
+				participationStorageService.saveParticipationScore(result.data.score);
 				this.$router.push("/result-page");
 			}
 		}
