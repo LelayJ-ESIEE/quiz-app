@@ -23,6 +23,12 @@
     	const info = await quizApiService.getQuizInfo();
     	this.totalNumberOfQuestion = info.data.size;
   	}
+		methods: {
+			async loadQuestionByPosition(position){
+			},
+			async answerClickedHandler(){},
+			async endQuiz(){}
+		}
 	}
 </script>
 
