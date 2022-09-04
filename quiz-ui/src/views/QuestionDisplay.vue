@@ -3,10 +3,10 @@
 	<h2>{{ question.title }}</h2>
 	<img v-if="question.image" :src="question.image" />
 	<p>{{ question.text }}</p>
-	<a v-for="(answer, index) in question.possibleAnswers" v-bind:key="answer.text"
+	<form v-for="(answer, index) in question.possibleAnswers" v-bind:key="answer.text"
 		@click="$emit('answer-selected', index)">
 		{{ answer.text }}
-	</a>
+	</form>
 </template>
 
 <script>

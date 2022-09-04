@@ -13,6 +13,8 @@
 			return {
 				totalNumberOfQuestion: 0,
 				currentQuestionPosition: 1,
+				currentQuestion: {},
+				answers: []
 			};
   	},
 		components: {
@@ -22,9 +24,12 @@
 			console.log("Composant Home page 'created'");
     	const info = await quizApiService.getQuizInfo();
     	this.totalNumberOfQuestion = info.data.size;
-  	}
+			await this.loadQuestionByPosition(this.currentQuestionPosition);
+  	},
 		methods: {
 			async loadQuestionByPosition(position){
+				let question = await quizApiService.getQuestion(position);
+				this.currentQuestion = question.data;
 			},
 			async answerClickedHandler(){},
 			async endQuiz(){}
