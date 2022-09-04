@@ -23,7 +23,7 @@ const router = createRouter({
       component: QuestionsManager
     },
     {
-      path: 'result-page',
+      path: '/result-page',
       name: 'ResultPage',
       component: ResultPage
     },
