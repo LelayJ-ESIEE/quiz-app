@@ -6,6 +6,7 @@
 <script>
 	import QuestionDisplay from './QuestionDisplay.vue';
 	import quizApiService from "@/services/QuizApiService";
+	import participationStorageService from "@/services/ParticipationStorageService"
 
 	export default{
 		name: "QuestionsManager",
@@ -34,9 +35,16 @@
 			async answerClickedHandler(index){
 				this.answers.push(index);
 				this.currentQuestionPosition++;
+				if (this.currentQuestionPosition > this.totalNumberOfQuestion) {
+        	this.endQuiz();
+					return;
+				}
 				this.loadQuestionByPosition(this.currentQuestionPosition);
 			},
-			async endQuiz(){}
+			async endQuiz(){
+				quizApiService.postParticipation(participationStorageService.getPlayerName(), this.answers);
+				this.$router.push("/result-page");
+			}
 		}
 	}
 </script>
