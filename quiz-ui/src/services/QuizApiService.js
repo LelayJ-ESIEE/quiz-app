@@ -32,5 +32,8 @@ export default {
   },
   getQuestion(position) {
     return this.call("get", "questions/"+position);
+  },
+  postParticipation(playerName, answers) {
+    return this.call("post", "participations", { "playerName": playerName, "answers": answers });
   }
 };
