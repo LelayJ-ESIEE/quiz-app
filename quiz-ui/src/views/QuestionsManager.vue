@@ -4,6 +4,9 @@
 </template>
 
 <script>
+	import QuestionDisplay from './QuestionDisplay.vue';
+	import quizApiService from "@/services/QuizApiService";
+
 	export default{
 		name: "QuestionsManager",
 		data() {
@@ -14,7 +17,12 @@
   	},
 		components: {
 			QuestionDisplay
-		}
+		},
+		async created() {
+			console.log("Composant Home page 'created'");
+    	const info = await quizApiService.getQuizInfo();
+    	this.totalNumberOfQuestion = info.data.size;
+  	}
 	}
 </script>
 
