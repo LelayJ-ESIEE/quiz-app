@@ -3,7 +3,7 @@
   <form>
     <div>
       <p>Saisissez votre nom :</p>
-      <input type="text" placeholder="Username" />
+      <input type="text" placeholder="Username" v-model="username" />
     </div>
     <button class="btn btn-success">Commencer le quiz</button>
   </form>
@@ -16,6 +16,7 @@ export default {
   name: "NewQuizPage",
   data() {
     return {
+      username: ''
     };
   },
   async created() {
