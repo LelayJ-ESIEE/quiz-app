@@ -22,7 +22,6 @@
 			QuestionDisplay
 		},
 		async created() {
-			console.log("Composant Home page 'created'");
     	const info = await quizApiService.getQuizInfo();
     	this.totalNumberOfQuestion = info.data.size;
 			await this.loadQuestionByPosition(this.currentQuestionPosition);

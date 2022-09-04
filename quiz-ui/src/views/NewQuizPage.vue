@@ -27,7 +27,6 @@ export default {
     },
   },
   async created() {
-		console.log("Composant New Quiz page 'created'");
   }
 };
 </script>
