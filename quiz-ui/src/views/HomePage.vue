@@ -25,5 +25,7 @@ export default {
 </script>
 
 <style>
-/*todo if possible  */
+h1 {
+  color: #198754;
+}
 </style>
