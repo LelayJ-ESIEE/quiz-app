@@ -1,6 +1,6 @@
 <template>
 	<h1>Question {{ currentQuestionPosition }} / {{ totalNumberOfQuestion }}</h1>
-	<QuestionDisplay :question="currentQuestion" @click-on-answer="answerClickedHandler" />
+	<QuestionDisplay :question="currentQuestion" @answer-selected="answerClickedHandler" />
 </template>
 
 <script>
@@ -31,7 +31,11 @@
 				let question = await quizApiService.getQuestion(position);
 				this.currentQuestion = question.data;
 			},
-			async answerClickedHandler(){},
+			async answerClickedHandler(index){
+				this.answers.push(index);
+				this.currentQuestionPosition++;
+				this.loadQuestionByPosition(this.currentQuestionPosition);
+			},
 			async endQuiz(){}
 		}
 	}

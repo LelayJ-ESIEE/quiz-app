@@ -1,12 +1,17 @@
 <template>
-	<h1>Questionnaire</h1>
 	<h2>{{ question.title }}</h2>
 	<img v-if="question.image" :src="question.image" />
 	<p>{{ question.text }}</p>
-	<form v-for="(answer, index) in question.possibleAnswers" v-bind:key="answer.text"
-		@click="$emit('answer-selected', index)">
-		{{ answer.text }}
-	</form>
+	<div>
+		<a v-if="question.possibleAnswers" @click="$emit('answer-selected', 1)">
+			A : {{ question.possibleAnswers[0].text }}</a> <br>
+		<a v-if="question.possibleAnswers" @click="$emit('answer-selected', 2)">
+			B : {{ question.possibleAnswers[1].text }}</a> <br>
+		<a v-if="question.possibleAnswers" @click="$emit('answer-selected', 3)">
+			C : {{ question.possibleAnswers[2].text }}</a> <br>
+		<a v-if="question.possibleAnswers" @click="$emit('answer-selected', 4)">
+			D : {{ question.possibleAnswers[3].text }}</a>
+	</div>
 </template>
 
 <script>
