@@ -1,5 +1,12 @@
 <template>
   <h1>New Quiz page</h1>
+  <form>
+    <div>
+      <p>Saisissez votre nom :</p>
+      <input type="text" placeholder="Username" />
+    </div>
+    <button class="btn btn-success">Commencer le quiz</button>
+  </form>
 </template>
 
 <script>
